@@ -7,9 +7,16 @@ export interface IconProps {
   color?: string;
   white?: boolean;
   style?: StyleProp<ViewStyle>;
+  handlePress?: () => void;
 }
 
-export default function Icon({name, color, white = false, style}: IconProps) {
+export default function Icon({
+  name,
+  color,
+  white = false,
+  handlePress,
+  style,
+}: IconProps) {
   const theme = useTheme();
 
   const fillColor = white
@@ -21,6 +28,7 @@ export default function Icon({name, color, white = false, style}: IconProps) {
   return (
     <MyIcon
       //
+      onPress={handlePress}
       name={name}
       fill={fillColor}
       style={[styles.icon, style]}
