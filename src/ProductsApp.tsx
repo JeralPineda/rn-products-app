@@ -11,13 +11,28 @@ import {EvaIconsPack} from "@ui-kitten/eva-icons";
 export default function ProductsApp() {
   const colorSchema = useColorScheme();
   const theme = colorSchema === "dark" ? eva.dark : eva.light;
+  const backgroundColor =
+    colorSchema === "dark"
+      ? theme["color-basic-800"]
+      : theme["color-basic-100"];
 
   return (
     <>
       <IconRegistry icons={EvaIconsPack} />
 
       <ApplicationProvider {...eva} theme={theme}>
-        <NavigationContainer>
+        <NavigationContainer
+          theme={{
+            dark: colorSchema === "dark",
+            colors: {
+              primary: theme["color-primary-500"],
+              background: backgroundColor,
+              text: theme["text-color-basic"],
+              card: backgroundColor,
+              border: "transparent",
+              notification: theme["color-primary-500"],
+            },
+          }}>
           <StackNavigator />
         </NavigationContainer>
       </ApplicationProvider>
