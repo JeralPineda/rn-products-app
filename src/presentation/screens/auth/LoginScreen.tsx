@@ -28,7 +28,6 @@ export const LoginScreen = ({navigation}: LoginScreenProps) => {
   });
 
   const {email} = watch();
-  console.log(process.env.API_URL);
 
   const onSubmit = (data: LoginFormData) => {
     console.log(
