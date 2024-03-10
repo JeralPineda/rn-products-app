@@ -58,8 +58,10 @@ export const LoginScreen = () => {
           />
 
           {/* Button */}
-          <Layout style={styles.button}>
-            <Button onPress={handleSubmit(onSubmit)}>Ingresar</Button>
+          <Layout style={styles.buttonContainer}>
+            <Button style={styles.button} onPress={handleSubmit(onSubmit)}>
+              Ingresar
+            </Button>
           </Layout>
 
           {/* Crear cuenta */}
@@ -86,8 +88,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
     gap: 10,
   },
-  button: {
+  buttonContainer: {
     marginTop: 12,
+  },
+  button: {
+    paddingVertical: 15,
   },
   info: {
     flex: 1,
