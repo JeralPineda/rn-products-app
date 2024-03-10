@@ -8,6 +8,7 @@ import {
   ViewStyle,
   useColorScheme,
 } from "react-native";
+import {normalize} from "../../../utils/metrics";
 
 interface LogoProps {
   styleContainer?: StyleProp<ViewStyle>;
@@ -32,9 +33,11 @@ export const Logo = ({styleContainer, imageStyle}: LogoProps) => {
 const styles = StyleSheet.create({
   constainer: {
     flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   logo: {
-    width: "100%",
-    height: 100,
+    width: normalize(300),
+    height: normalize(80),
   },
 });
