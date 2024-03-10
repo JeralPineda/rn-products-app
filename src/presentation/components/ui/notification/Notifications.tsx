@@ -10,10 +10,7 @@ type Position = "left" | "right";
 
 const Notifications = ({position = "left"}: {position?: Position}) => {
   const notifications = useUistore(state => state.notifications);
-  console.log(
-    "🚀 Notifications.tsx -> #12 -> notifications ~",
-    JSON.stringify(notifications, null, 2),
-  );
+
   // const top = useSafeAreaInsets();
 
   return (
