@@ -1,6 +1,9 @@
 import {tesloApi} from "../../config/api/tesloApi";
 import {User} from "../../domain/entities/user";
-import {AuthResponse} from "../../infrastructure/interfaces/auth.response";
+import {
+  AuthDataResult,
+  AuthResponse,
+} from "../../infrastructure/interfaces/auth.response";
 
 const returnUserToken = (data: AuthResponse) => {
   const user: User = {
@@ -17,7 +20,10 @@ const returnUserToken = (data: AuthResponse) => {
   };
 };
 
-export const authLogin = async (email: string, password: string) => {
+export const authLogin = async (
+  email: string,
+  password: string,
+): Promise<AuthDataResult> => {
   email = email.toLocaleLowerCase();
 
   try {
@@ -26,9 +32,19 @@ export const authLogin = async (email: string, password: string) => {
       password,
     });
 
-    return returnUserToken(data);
-  } catch (error) {
-    console.log("🚀 index.ts -> #5 -> error ~", JSON.stringify(error, null, 2));
-    return null;
+    return {...returnUserToken(data), ok: true};
+  } catch (error: any) {
+    // console.log(
+    //   "🚀 index.ts -> #33 -> error ~",
+    //   JSON.stringify(error, null, 2),
+    // );
+    const message =
+      error?.response.data && Array.isArray(error?.response?.data?.message)
+        ? error?.response?.data?.message
+        : [error?.response?.data?.message] || [
+            "Las credenciales son invalidas",
+          ];
+
+    return {ok: false, message, user: undefined, token: undefined};
   }
 };

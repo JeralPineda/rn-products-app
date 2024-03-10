@@ -20,8 +20,9 @@ export const useUistore = create<UiState>()(set => ({
   addNotification: (notification: Notification) => {
     const newNotification: Notification = {
       ...notification,
-      id: new Date().getTime(),
+      id: new Date().getTime() + 1,
     };
+
     set(state => ({
       notifications:
         state.notifications !== null
