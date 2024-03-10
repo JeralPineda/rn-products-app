@@ -12,7 +12,7 @@ export interface Authstate {
   login: (email: string, password: string) => Promise<boolean>;
 }
 
-export const useAuthStore = create<Authstate>()((set, get) => ({
+export const useAuthStore = create<Authstate>()(set => ({
   status: "checking",
   token: undefined,
   user: undefined,
