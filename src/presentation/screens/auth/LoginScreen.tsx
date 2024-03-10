@@ -6,13 +6,18 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {LoginSchema} from "../../../utils/validators/login";
 import LoginInput from "../../components/auth/InputLogin";
+import {StackScreenProps} from "@react-navigation/stack";
+import {RootStackParams} from "../../navigation/StackNavigator";
 
 interface LoginFormData {
   email: string;
   password: string;
 }
 
-export const LoginScreen = () => {
+interface LoginScreenProps
+  extends StackScreenProps<RootStackParams, "LoginScreen"> {}
+
+export const LoginScreen = ({navigation}: LoginScreenProps) => {
   const {height} = useWindowDimensions();
   const {control, handleSubmit, watch} = useForm<LoginFormData>({
     defaultValues: {
@@ -26,7 +31,7 @@ export const LoginScreen = () => {
 
   const onSubmit = (data: LoginFormData) => {
     console.log(
-      "🚀 sign-in.tsx -> #27 -> data ~",
+      "🚀 LoginScreen.tsx -> #33 -> data ~",
       JSON.stringify(data, null, 2),
     );
   };
@@ -36,7 +41,7 @@ export const LoginScreen = () => {
       <ScrollView
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}>
-        <Logo styleContainer={{marginTop: height * 0.25}} />
+        <Logo styleContainer={{marginTop: height * 0.25, height: 90}} />
 
         {/* LoginBox */}
         <Layout style={styles.loginBox}>
@@ -67,7 +72,10 @@ export const LoginScreen = () => {
           {/* Crear cuenta */}
           <Layout style={styles.info}>
             <Text>¿No tienes una cuenta?</Text>
-            <Text status="primary" category="s1" onPress={() => {}}>
+            <Text
+              status="primary"
+              category="s1"
+              onPress={() => navigation.navigate("RegisterScreen")}>
               Regístrate
             </Text>
           </Layout>
