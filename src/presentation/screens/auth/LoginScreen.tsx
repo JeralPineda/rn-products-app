@@ -14,13 +14,15 @@ interface LoginFormData {
 
 export const LoginScreen = () => {
   const {height} = useWindowDimensions();
-  const {control, handleSubmit} = useForm<LoginFormData>({
+  const {control, handleSubmit, watch} = useForm<LoginFormData>({
     defaultValues: {
       email: "",
       password: "",
     },
     resolver: zodResolver(LoginSchema),
   });
+
+  const {email} = watch();
 
   const onSubmit = (data: LoginFormData) => {
     console.log(
@@ -52,6 +54,7 @@ export const LoginScreen = () => {
             name="password"
             type="password"
             rules={{required: "Usuario es requerido"}}
+            username={email}
           />
 
           {/* Button */}

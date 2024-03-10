@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {StyleSheet, Platform} from "react-native";
-import React, {useState} from "react";
+import {StyleSheet, Platform, TextInput, Keyboard} from "react-native";
+import React, {useRef, useState} from "react";
 import {Controller} from "react-hook-form";
 import {LoginInputProps} from "../../../types/form";
 import {Input, Layout, Text} from "@ui-kitten/components";
@@ -18,9 +18,19 @@ export default function LoginInput({
 }: LoginInputProps) {
   const [showPassword, setShowPassword] = useState(false);
 
+  const inputRef = useRef<Input | null>(null);
+
+  const handleSubmitting = (text: string) => {
+    if (username && text) {
+      handleSubmit && handleSubmit();
+    } else {
+      Keyboard.dismiss();
+    }
+  };
+
   const renderInputIcon = (): React.ReactElement => (
     <TouchableWithoutFeedback onPress={() => setShowPassword(prev => !prev)}>
-      <Icon name={!showPassword ? "eye" : "eye-off"} />
+      <Icon name={showPassword ? "eye" : "eye-off"} />
     </TouchableWithoutFeedback>
   );
 
@@ -54,7 +64,7 @@ export default function LoginInput({
           <Layout>
             <Input
               textStyle={styles.inputStyled}
-              secureTextEntry={showPassword}
+              secureTextEntry={!showPassword}
               accessoryRight={renderInputIcon}
               placeholder={label}
               status={error ? "danger" : "basic"}
@@ -67,6 +77,10 @@ export default function LoginInput({
               autoCorrect={false}
               returnKeyType="done"
               autoCapitalize="none"
+              onSubmitEditing={event =>
+                handleSubmitting(event.nativeEvent.text)
+              }
+              ref={inputRef}
             />
 
             {error && <Text style={styles.errorMessage}>{error?.message}</Text>}
