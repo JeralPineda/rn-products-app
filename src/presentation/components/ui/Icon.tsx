@@ -13,7 +13,7 @@ export default function Icon({name, color, white = false, style}: IconProps) {
   const theme = useTheme();
 
   const fillColor = white
-    ? theme["color-info-transparent-100"]
+    ? theme["color-text-basic"]
     : !color
     ? theme["color-basic-500"]
     : theme[color] ?? theme["color-basic-500"];
