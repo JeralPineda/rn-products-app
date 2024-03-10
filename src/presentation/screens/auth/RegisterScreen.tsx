@@ -43,7 +43,7 @@ export const RegisterScreen = ({navigation}: LoginScreenProps) => {
       <ScrollView
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}>
-        <Logo styleContainer={{marginTop: height * 0.13, height: 90}} />
+        <Logo styleContainer={{marginTop: height * 0.13}} />
 
         {/* LoginBox */}
         <Layout style={[styles.loginBox]}>
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   buttonContainer: {
-    marginTop: 12,
+    marginTop: 25,
   },
   button: {
     paddingVertical: 15,
@@ -116,5 +116,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 10,
     marginTop: 10,
+    justifyContent: "center",
   },
 });
