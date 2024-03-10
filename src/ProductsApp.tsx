@@ -7,6 +7,7 @@ import {ApplicationProvider, IconRegistry} from "@ui-kitten/components";
 import {StackNavigator} from "./presentation/navigation/StackNavigator";
 import {useColorScheme} from "react-native";
 import {EvaIconsPack} from "@ui-kitten/eva-icons";
+import {Notifications} from "./presentation/components/ui/notification";
 
 export default function ProductsApp() {
   const colorSchema = useColorScheme();
@@ -34,6 +35,7 @@ export default function ProductsApp() {
             },
           }}>
           <StackNavigator />
+          <Notifications position="right" />
         </NavigationContainer>
       </ApplicationProvider>
     </>
