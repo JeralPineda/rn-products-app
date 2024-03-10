@@ -103,8 +103,8 @@ const Notification = ({notification}: {notification: INotification}) => {
       {getIcon(notification.type)}
       <View>
         {Array.isArray(notification?.message) ? (
-          notification?.message.map(msg => (
-            <Text key={msg} style={Styles.text(getColor(notification.type)!)}>
+          notification?.message.map((msg, index) => (
+            <Text key={index} style={Styles.text(getColor(notification.type)!)}>
               {msg}
             </Text>
           ))
