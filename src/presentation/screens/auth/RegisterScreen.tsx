@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {Button, Layout, Text} from "@ui-kitten/components";
 import {ScrollView, StyleSheet, useWindowDimensions} from "react-native";
 import {useForm} from "react-hook-form";
@@ -8,6 +8,7 @@ import LoginInput from "../../components/auth/InputLogin";
 import {StackScreenProps} from "@react-navigation/stack";
 import {RootStackParams} from "../../navigation/StackNavigator";
 import {Logo} from "../../components/ui/Logo";
+import {useAuthStore, useUistore} from "../../store";
 
 interface RegisterFormData {
   fullName: string;
@@ -19,7 +20,11 @@ interface LoginScreenProps
   extends StackScreenProps<RootStackParams, "RegisterScreen"> {}
 
 export const RegisterScreen = ({navigation}: LoginScreenProps) => {
+  const [isPosting, setIsPosting] = useState(false);
+  const addNotification = useUistore(state => state.addNotification);
+  const register = useAuthStore(state => state.register);
   const {height} = useWindowDimensions();
+
   const {control, handleSubmit, watch} = useForm<RegisterFormData>({
     defaultValues: {
       fullName: "",
@@ -31,11 +36,16 @@ export const RegisterScreen = ({navigation}: LoginScreenProps) => {
 
   const {email} = watch();
 
-  const onSubmit = (data: RegisterFormData) => {
-    console.log(
-      "🚀 sign-in.tsx -> #27 -> data ~",
-      JSON.stringify(data, null, 2),
-    );
+  const onSubmit = async (data: RegisterFormData) => {
+    setIsPosting(true);
+    const resp = await register(data.email, data.password, data.fullName);
+    setIsPosting(false);
+    if (!resp.ok) {
+      return addNotification({
+        message: resp?.message!,
+        type: "error",
+      });
+    }
   };
 
   return (
@@ -73,7 +83,10 @@ export const RegisterScreen = ({navigation}: LoginScreenProps) => {
 
           {/* Button */}
           <Layout style={styles.buttonContainer}>
-            <Button style={styles.button} onPress={handleSubmit(onSubmit)}>
+            <Button
+              disabled={isPosting}
+              style={styles.button}
+              onPress={handleSubmit(onSubmit)}>
               Crear cuenta
             </Button>
           </Layout>

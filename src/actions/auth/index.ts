@@ -35,7 +35,7 @@ export const authLogin = async (
     return {...returnUserToken(data), ok: true};
   } catch (error: any) {
     console.log(
-      "🚀 index.ts -> #33 -> error ~",
+      "🚀 index.ts -> #38 -> error ~",
       JSON.stringify(error, null, 2),
     );
     const message =
@@ -49,13 +49,42 @@ export const authLogin = async (
   }
 };
 
+export const authRegister = async (
+  email: string,
+  password: string,
+  fullName: string,
+): Promise<AuthDataResult> => {
+  email = email.toLocaleLowerCase();
+
+  try {
+    const {data} = await tesloApi.post<AuthResponse>("/auth/register", {
+      email,
+      password,
+      fullName,
+    });
+
+    return {...returnUserToken(data), ok: true};
+  } catch (error: any) {
+    console.log(
+      "🚀 index.ts -> #69 -> error ~",
+      JSON.stringify(error, null, 2),
+    );
+    const message =
+      error?.response?.data && Array.isArray(error?.response?.data?.message)
+        ? error?.response?.data?.message
+        : [error?.response?.data?.message] || ["Error al crear el usuario"];
+
+    return {ok: false, message, user: undefined, token: undefined};
+  }
+};
+
 export const authCheckStatus = async () => {
   try {
     const {data} = await tesloApi.get<AuthResponse>("/auth/check-status");
     return {...returnUserToken(data), ok: true};
   } catch (error) {
     console.log(
-      "🚀 index.ts -> #55 -> error ~",
+      "🚀 index.ts -> #89 -> error ~",
       JSON.stringify(error, null, 2),
     );
     return null;
