@@ -2,6 +2,7 @@ import {create} from "zustand";
 import {authLogin} from "../../../actions/auth";
 import {User} from "../../../domain/entities/user";
 import {AuthStatus} from "../../../infrastructure/interfaces/auth.status";
+import {StorageAdapter} from "../../../config/adapters/async-storage";
 
 export interface LoginData {
   ok: boolean;
@@ -29,11 +30,8 @@ export const useAuthStore = create<Authstate>()(set => ({
       return {ok: resp.ok, message: resp?.message};
     }
 
-    //TODO Save token and user in storage
-    console.log(
-      "🚀 useAuthStore.tsx -> #36 -> resp ~",
-      JSON.stringify(resp, null, 2),
-    );
+    //* Save token and user in storage - async storage
+    await StorageAdapter.setItem("token", resp?.token!);
 
     set({status: "authenticated", token: resp?.token, user: resp?.user});
 

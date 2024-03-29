@@ -39,7 +39,7 @@ export const authLogin = async (
     //   JSON.stringify(error, null, 2),
     // );
     const message =
-      error?.response.data && Array.isArray(error?.response?.data?.message)
+      error?.response?.data && Array.isArray(error?.response?.data?.message)
         ? error?.response?.data?.message
         : [error?.response?.data?.message] || [
             "Las credenciales son invalidas",
