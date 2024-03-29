@@ -34,10 +34,10 @@ export const authLogin = async (
 
     return {...returnUserToken(data), ok: true};
   } catch (error: any) {
-    // console.log(
-    //   "🚀 index.ts -> #33 -> error ~",
-    //   JSON.stringify(error, null, 2),
-    // );
+    console.log(
+      "🚀 index.ts -> #33 -> error ~",
+      JSON.stringify(error, null, 2),
+    );
     const message =
       error?.response?.data && Array.isArray(error?.response?.data?.message)
         ? error?.response?.data?.message
@@ -46,5 +46,18 @@ export const authLogin = async (
           ];
 
     return {ok: false, message, user: undefined, token: undefined};
+  }
+};
+
+export const authCheckStatus = async () => {
+  try {
+    const {data} = await tesloApi.get<AuthResponse>("/auth/check-status");
+    return {...returnUserToken(data), ok: true};
+  } catch (error) {
+    console.log(
+      "🚀 index.ts -> #55 -> error ~",
+      JSON.stringify(error, null, 2),
+    );
+    return null;
   }
 };
