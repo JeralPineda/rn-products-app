@@ -8,6 +8,7 @@ import {StackNavigator} from "./presentation/navigation/StackNavigator";
 import {useColorScheme} from "react-native";
 import {EvaIconsPack} from "@ui-kitten/eva-icons";
 import {Notifications} from "./presentation/components/ui/notification";
+import {AuthProvider} from "./presentation/providers/AuthProvider";
 
 export default function ProductsApp() {
   const colorSchema = useColorScheme();
@@ -34,7 +35,9 @@ export default function ProductsApp() {
               notification: theme["color-primary-500"],
             },
           }}>
-          <StackNavigator />
+          <AuthProvider>
+            <StackNavigator />
+          </AuthProvider>
           <Notifications position="right" />
         </NavigationContainer>
       </ApplicationProvider>
