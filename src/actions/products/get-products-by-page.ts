@@ -9,10 +9,6 @@ export const getProductsByPage = async (page: number, limit: number = 20) => {
     );
 
     const product = data.map(ProductMapper.tesloProductToEntity);
-    console.log(
-      "🚀 get-products-by-page.ts -> #12 -> product ~",
-      JSON.stringify(product, null, 2),
-    );
     return product;
   } catch (error) {
     console.log(
