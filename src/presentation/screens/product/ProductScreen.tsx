@@ -6,8 +6,20 @@ import {StackScreenProps} from "@react-navigation/stack";
 import {MainLayout} from "../../layouts/MainLayout";
 import {getProductById} from "../../../actions/products/get-product-by-id";
 import {RootStackParams} from "../../navigation/StackNavigator";
-import {Input, Layout} from "@ui-kitten/components";
+import {Layout} from "@ui-kitten/components";
 import {FadeInImage} from "../../components/ui/FadeInImage";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {ProductSchema} from "../../../utils/validators/product";
+import FormInput from "../../components/ui/form/Input";
+
+interface ProductFormData {
+  title: string;
+  slug: string;
+  description: string;
+  price: string;
+  stock: string;
+}
 
 interface ProductScreenProps
   extends StackScreenProps<RootStackParams, "ProductScreen"> {}
@@ -19,6 +31,17 @@ export const ProductScreen = ({route}: ProductScreenProps) => {
   const {data: product} = useQuery({
     queryKey: ["product", productIdRef.current],
     queryFn: () => getProductById(productIdRef.current),
+  });
+
+  const {control, handleSubmit} = useForm<ProductFormData>({
+    defaultValues: {
+      title: product?.title,
+      slug: product?.slug,
+      description: product?.description,
+      price: product?.price.toString(),
+      stock: product?.stock.toString(),
+    },
+    resolver: zodResolver(ProductSchema),
   });
 
   //useMutation
@@ -48,37 +71,54 @@ export const ProductScreen = ({route}: ProductScreenProps) => {
         </Layout>
 
         {/* Formulario */}
-        <Layout style={{marginHorizontal: 10}}>
-          <Input
+        <Layout style={{marginHorizontal: 10, marginVertical: 5}}>
+          <FormInput
+            //
+            control={control}
             label="Titulo"
-            value={product.title}
-            style={{marginVertical: 5}}
+            name="title"
+            defaultValue={product.title}
+            rules={{required: "Correo es requerido"}}
           />
-          <Input
+          <FormInput
+            //
+            control={control}
             label="Slug"
-            value={product.slug}
-            style={{marginVertical: 5}}
+            name="slug"
+            defaultValue={product.slug}
+            rules={{required: "Correo es requerido"}}
           />
-          <Input
-            label="Descripcion"
-            value={product.description}
+          <FormInput
+            //
+            control={control}
+            label="Descripción"
+            name="description"
             multiline
             numberOfLines={5}
-            style={{marginVertical: 5}}
+            defaultValue={product.description}
+            rules={{required: "Correo es requerido"}}
           />
         </Layout>
 
         {/*  Detalle */}
         <Layout style={styles.detail}>
-          <Input
+          <FormInput
+            //
+            control={control}
             label="Precio"
-            value={product.price.toString()}
-            style={{flex: 1}}
+            name="price"
+            defaultValue={product.price.toString()}
+            rules={{required: "Correo es requerido"}}
+            styleInput={{flex: 1}}
           />
-          <Input
+          <FormInput
+            //
+            control={control}
             label="Inventario"
-            value={product.stock.toString()}
-            style={{flex: 1}}
+            name="stock"
+            defaultValue={product.stock.toString()}
+            rules={{required: "Correo es requerido"}}
+            styleInput={{flex: 1}}
           />
         </Layout>
         <Layout style={{height: 200}} />

@@ -1,5 +1,5 @@
-import { Control, FieldPath, FieldValues } from "react-hook-form";
-import { KeyboardTypeOptions, StyleProp, ViewStyle } from "react-native";
+import {Control, FieldPath, FieldValues} from "react-hook-form";
+import {KeyboardTypeOptions, StyleProp, ViewStyle} from "react-native";
 
 export interface InputProps<T extends FieldValues> {
   title: string;
@@ -31,8 +31,20 @@ export interface LoginInputProps {
   label: string;
   name: string;
   type?: string;
-  rules: { required: string };
+  rules: {required: string};
   username?: string;
   handleSubmit?: () => void;
 }
-
+export interface ProductInputProps {
+  control: Control<any>;
+  label: string;
+  name: string;
+  defaultValue?: string;
+  type?: string;
+  multiline?: boolean;
+  numberOfLines?: number;
+  rules: {required: string};
+  username?: string;
+  styleInput?: object;
+  handleSubmit?: () => void;
+}
