@@ -1,17 +1,22 @@
-import React, {useRef} from "react";
+/* eslint-disable react-native/no-inline-styles */
+import React, {useEffect, useRef} from "react";
 import {FlatList, ScrollView, StyleSheet} from "react-native";
 import {useQuery} from "@tanstack/react-query";
 import {StackScreenProps} from "@react-navigation/stack";
+import {useForm} from "react-hook-form";
+import {Button, ButtonGroup, Layout, useTheme} from "@ui-kitten/components";
+import {zodResolver} from "@hookform/resolvers/zod";
 
 import {MainLayout} from "../../layouts/MainLayout";
 import {getProductById} from "../../../actions/products/get-product-by-id";
 import {RootStackParams} from "../../navigation/StackNavigator";
-import {Layout} from "@ui-kitten/components";
 import {FadeInImage} from "../../components/ui/FadeInImage";
-import {useForm} from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
 import {ProductSchema} from "../../../utils/validators/product";
 import FormInput from "../../components/ui/form/Input";
+import {Gender, Size} from "../../../domain/entities/product";
+
+const sizes: Size[] = [Size.Xs, Size.S, Size.M, Size.L, Size.Xl, Size.Xxl];
+const genders: Gender[] = [Gender.Kid, Gender.Men, Gender.Women, Gender.Unisex];
 
 interface ProductFormData {
   title: string;
@@ -19,6 +24,11 @@ interface ProductFormData {
   description: string;
   price: string;
   stock: string;
+  gender: string;
+  images: string[] | undefined;
+  tags: string[] | undefined;
+  sizes: string[] | undefined;
+  id: string;
 }
 
 interface ProductScreenProps
@@ -27,22 +37,47 @@ interface ProductScreenProps
 export const ProductScreen = ({route}: ProductScreenProps) => {
   //* Para cuando toque guardar necesitara actualizar ese Id, para evitar salir y hacer otras peticiones
   const productIdRef = useRef(route.params.productId);
+  const theme = useTheme();
 
   const {data: product} = useQuery({
     queryKey: ["product", productIdRef.current],
     queryFn: () => getProductById(productIdRef.current),
   });
 
-  const {control, handleSubmit} = useForm<ProductFormData>({
+  const {control, handleSubmit, setValue, watch} = useForm<ProductFormData>({
     defaultValues: {
+      id: product?.id,
       title: product?.title,
       slug: product?.slug,
       description: product?.description,
       price: product?.price.toString(),
       stock: product?.stock.toString(),
+      gender: product?.gender,
+      tags: product?.tags,
+      images: product?.images,
+      sizes: product?.sizes,
     },
     resolver: zodResolver(ProductSchema),
   });
+
+  //Get Sizes Values from useForm
+  const defaultSizes = watch("sizes");
+  const genderValue = watch("gender");
+
+  useEffect(() => {
+    setValue("sizes", product?.sizes);
+    setValue("gender", product?.gender ? product?.gender : "");
+  }, [product, setValue]);
+
+  const onSubmit = (data: ProductFormData) => {
+    // data.images = product?.images;
+    // data.tags = product?.tags;
+
+    console.log(
+      "🚀 ProductScreen.tsx -> #53 -> data ~",
+      JSON.stringify(data, null, 2),
+    );
+  };
 
   //useMutation
 
@@ -71,7 +106,7 @@ export const ProductScreen = ({route}: ProductScreenProps) => {
         </Layout>
 
         {/* Formulario */}
-        <Layout style={{marginHorizontal: 10, marginVertical: 5}}>
+        <Layout style={styles?.formContainer}>
           <FormInput
             //
             control={control}
@@ -100,7 +135,7 @@ export const ProductScreen = ({route}: ProductScreenProps) => {
           />
         </Layout>
 
-        {/*  Detalle */}
+        {/* Precio e inventario */}
         <Layout style={styles.detail}>
           <FormInput
             //
@@ -121,6 +156,52 @@ export const ProductScreen = ({route}: ProductScreenProps) => {
             styleInput={{flex: 1}}
           />
         </Layout>
+
+        {/* Selectores */}
+        <ButtonGroup style={styles.selectors} size="small" appearance="outline">
+          {sizes?.map(size => (
+            <Button
+              onPress={() =>
+                setValue(
+                  "sizes",
+                  defaultSizes?.includes(size)
+                    ? defaultSizes?.filter(s => s !== size)
+                    : [...defaultSizes!, size],
+                )
+              }
+              style={{
+                flex: 1,
+                backgroundColor: defaultSizes?.includes(size)
+                  ? theme["color-primary-200"]
+                  : undefined,
+              }}
+              key={size}>
+              {size}
+            </Button>
+          ))}
+        </ButtonGroup>
+        <ButtonGroup style={styles.selectors} size="small" appearance="outline">
+          {genders.map(gender => (
+            <Button
+              onPress={() => setValue("gender", gender)}
+              style={{
+                flex: 1,
+                backgroundColor:
+                  genderValue === gender
+                    ? theme["color-primary-200"]
+                    : undefined,
+              }}
+              key={gender}>
+              {gender}
+            </Button>
+          ))}
+        </ButtonGroup>
+
+        {/* Submit Button */}
+        <Button style={{margin: 15}} onPress={handleSubmit(onSubmit)}>
+          Guardar
+        </Button>
+
         <Layout style={{height: 200}} />
       </ScrollView>
     </MainLayout>
@@ -131,10 +212,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  formContainer: {
+    marginHorizontal: 10,
+    marginVertical: 5,
+  },
   detail: {
     marginVertical: 5,
     marginHorizontal: 15,
     flexDirection: "row",
     gap: 10,
+  },
+  selectors: {
+    margin: 2,
+    marginTop: 30,
+    marginHorizontal: 15,
   },
 });
