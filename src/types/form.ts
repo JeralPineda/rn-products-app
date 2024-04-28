@@ -40,7 +40,7 @@ export interface ProductInputProps {
   label: string;
   name: string;
   defaultValue?: string;
-  type?: string;
+  type?: KeyboardTypeOptions;
   multiline?: boolean;
   numberOfLines?: number;
   rules: {required: string};

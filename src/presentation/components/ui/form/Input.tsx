@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {StyleSheet, Platform, TextInput, Keyboard} from "react-native";
-import React, {useRef, useState} from "react";
+import {StyleSheet} from "react-native";
+import React, {useRef} from "react";
 import {Controller} from "react-hook-form";
 import {Input, Layout, Text} from "@ui-kitten/components";
 import {ProductInputProps} from "../../../../types/form";
@@ -9,7 +9,7 @@ export default function FormInput({
   control,
   label,
   name,
-  type,
+  type = "default",
   rules,
   defaultValue,
   multiline = false,
@@ -39,7 +39,7 @@ export default function FormInput({
               onChange(text);
             }}
             onBlur={onBlur}
-            keyboardType="email-address"
+            keyboardType={type === "numeric" ? type : "default"}
             spellCheck={false}
             autoCorrect={false}
             returnKeyType="done"
