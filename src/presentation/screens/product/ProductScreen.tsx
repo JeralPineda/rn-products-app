@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useRef} from "react";
 import {FlatList, ScrollView, StyleSheet} from "react-native";
-import {useQuery} from "@tanstack/react-query";
+import {useMutation, useQuery} from "@tanstack/react-query";
 import {StackScreenProps} from "@react-navigation/stack";
 import {useForm} from "react-hook-form";
 import {Button, ButtonGroup, Layout, useTheme} from "@ui-kitten/components";
@@ -13,7 +13,9 @@ import {RootStackParams} from "../../navigation/StackNavigator";
 import {FadeInImage} from "../../components/ui/FadeInImage";
 import {ProductSchema} from "../../../utils/validators/product";
 import FormInput from "../../components/ui/form/Input";
-import {Gender, Size} from "../../../domain/entities/product";
+import {Gender, Product, Size} from "../../../domain/entities/product";
+import {updateCreateProduct} from "../../../actions/products/update-create-product";
+import {useUistore} from "../../store";
 
 const sizes: Size[] = [Size.Xs, Size.S, Size.M, Size.L, Size.Xl, Size.Xxl];
 const genders: Gender[] = [Gender.Kid, Gender.Men, Gender.Women, Gender.Unisex];
@@ -22,12 +24,12 @@ interface ProductFormData {
   title: string;
   slug: string;
   description: string;
-  price: string;
-  stock: string;
-  gender: string;
-  images: string[] | undefined;
-  tags: string[] | undefined;
-  sizes: string[] | undefined;
+  price: number | string;
+  stock: number | string;
+  gender: Gender;
+  images: string[];
+  tags: string[];
+  sizes: Size[];
   id: string;
 }
 
@@ -38,10 +40,28 @@ export const ProductScreen = ({route}: ProductScreenProps) => {
   //* Para cuando toque guardar necesitara actualizar ese Id, para evitar salir y hacer otras peticiones
   const productIdRef = useRef(route.params.productId);
   const theme = useTheme();
+  const addNotification = useUistore(state => state.addNotification);
 
   const {data: product} = useQuery({
     queryKey: ["product", productIdRef.current],
     queryFn: () => getProductById(productIdRef.current),
+  });
+
+  const {mutate, isSuccess, isError, error, isPending} = useMutation({
+    mutationFn: (data: Product) =>
+      updateCreateProduct({...data, id: productIdRef.current}),
+    onSuccess(data: Product) {
+      addNotification({
+        message: ["Producto actualizado correctamente"],
+        type: "success",
+      });
+    },
+    onError(err) {
+      console.log(
+        "🚀 ProductScreen.tsx -> #58 -> error ~",
+        JSON.stringify(err, null, 2),
+      );
+    },
   });
 
   const {control, handleSubmit, setValue, watch} = useForm<ProductFormData>({
@@ -65,21 +85,18 @@ export const ProductScreen = ({route}: ProductScreenProps) => {
   const genderValue = watch("gender");
 
   useEffect(() => {
-    setValue("sizes", product?.sizes);
-    setValue("gender", product?.gender ? product?.gender : "");
+    setValue("sizes", product?.sizes!);
+    setValue("gender", product?.gender!);
   }, [product, setValue]);
 
   const onSubmit = (data: ProductFormData) => {
-    // data.images = product?.images;
-    // data.tags = product?.tags;
-
-    console.log(
-      "🚀 ProductScreen.tsx -> #53 -> data ~",
-      JSON.stringify(data, null, 2),
-    );
+    const newData = {
+      ...data,
+      price: Number(data.price),
+      stock: Number(data.stock),
+    };
+    mutate(newData);
   };
-
-  //useMutation
 
   if (!product) {
     return <MainLayout title="Cargando" />;
@@ -141,6 +158,7 @@ export const ProductScreen = ({route}: ProductScreenProps) => {
             //
             control={control}
             label="Precio"
+            type="numeric"
             name="price"
             defaultValue={product.price.toString()}
             rules={{required: "Correo es requerido"}}
@@ -150,6 +168,7 @@ export const ProductScreen = ({route}: ProductScreenProps) => {
             //
             control={control}
             label="Inventario"
+            type="numeric"
             name="stock"
             defaultValue={product.stock.toString()}
             rules={{required: "Correo es requerido"}}
@@ -198,7 +217,10 @@ export const ProductScreen = ({route}: ProductScreenProps) => {
         </ButtonGroup>
 
         {/* Submit Button */}
-        <Button style={{margin: 15}} onPress={handleSubmit(onSubmit)}>
+        <Button
+          style={{margin: 15}}
+          onPress={handleSubmit(onSubmit)}
+          disabled={isPending}>
           Guardar
         </Button>
 
