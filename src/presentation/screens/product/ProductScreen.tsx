@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useRef} from "react";
 import {FlatList, ScrollView, StyleSheet} from "react-native";
-import {useMutation, useQuery} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {StackScreenProps} from "@react-navigation/stack";
 import {useForm} from "react-hook-form";
 import {Button, ButtonGroup, Layout, useTheme} from "@ui-kitten/components";
@@ -41,16 +41,22 @@ export const ProductScreen = ({route}: ProductScreenProps) => {
   const productIdRef = useRef(route.params.productId);
   const theme = useTheme();
   const addNotification = useUistore(state => state.addNotification);
+  const queryClient = useQueryClient();
 
   const {data: product} = useQuery({
     queryKey: ["product", productIdRef.current],
     queryFn: () => getProductById(productIdRef.current),
   });
 
-  const {mutate, isSuccess, isError, error, isPending} = useMutation({
+  const {mutate, isPending} = useMutation({
     mutationFn: (data: Product) =>
       updateCreateProduct({...data, id: productIdRef.current}),
     onSuccess(data: Product) {
+      productIdRef.current = data.id;
+
+      queryClient.invalidateQueries({queryKey: ["products", "infinite"]});
+      queryClient.invalidateQueries({queryKey: ["product", data.id]});
+
       addNotification({
         message: ["Producto actualizado correctamente"],
         type: "success",

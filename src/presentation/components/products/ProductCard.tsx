@@ -48,5 +48,6 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: "center",
+    color: "#000",
   },
 });
