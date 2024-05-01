@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useRef} from "react";
-import {FlatList, ScrollView, StyleSheet} from "react-native";
+import {ScrollView, StyleSheet} from "react-native";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {StackScreenProps} from "@react-navigation/stack";
 import {useForm} from "react-hook-form";
@@ -10,12 +10,12 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {MainLayout} from "../../layouts/MainLayout";
 import {getProductById} from "../../../actions/products/get-product-by-id";
 import {RootStackParams} from "../../navigation/StackNavigator";
-import {FadeInImage} from "../../components/ui/FadeInImage";
 import {ProductSchema} from "../../../utils/validators/product";
 import FormInput from "../../components/ui/form/Input";
 import {Gender, Product, Size} from "../../../domain/entities/product";
 import {updateCreateProduct} from "../../../actions/products/update-create-product";
 import {useUistore} from "../../store";
+import {ProductSlider} from "../../components/products/ProductSlider";
 
 const sizes: Size[] = [Size.Xs, Size.S, Size.M, Size.L, Size.Xl, Size.Xxl];
 const genders: Gender[] = [Gender.Kid, Gender.Men, Gender.Women, Gender.Unisex];
@@ -53,12 +53,16 @@ export const ProductScreen = ({route}: ProductScreenProps) => {
       updateCreateProduct({...data, id: productIdRef.current}),
     onSuccess(data: Product) {
       productIdRef.current = data.id;
+      const message =
+        data?.id === "new"
+          ? "Producto creado correctamente"
+          : "Producto actualizado correctamente";
 
       queryClient.invalidateQueries({queryKey: ["products", "infinite"]});
       queryClient.invalidateQueries({queryKey: ["product", data.id]});
 
       addNotification({
-        message: ["Producto actualizado correctamente"],
+        message: [message],
         type: "success",
       });
     },
@@ -67,6 +71,10 @@ export const ProductScreen = ({route}: ProductScreenProps) => {
         "🚀 ProductScreen.tsx -> #58 -> error ~",
         JSON.stringify(err, null, 2),
       );
+      addNotification({
+        message: [err.message],
+        type: "error",
+      });
     },
   });
 
@@ -113,19 +121,7 @@ export const ProductScreen = ({route}: ProductScreenProps) => {
       <ScrollView style={styles.container}>
         {/* Imágenes del producto */}
         <Layout>
-          {/* Validar cuando no hay imágenes */}
-          <FlatList
-            data={product.images}
-            horizontal
-            keyExtractor={item => item}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({item}) => (
-              <FadeInImage
-                uri={item}
-                style={{width: 300, height: 300, marginHorizontal: 7}}
-              />
-            )}
-          />
+          <ProductSlider images={product.images} />
         </Layout>
 
         {/* Formulario */}
